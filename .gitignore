@@ -1,0 +1,44 @@
+# Ignore Python bytecode files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ignore environment directories (for virtual environments)
+.env/
+.venv/
+venv/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore SQLite database files (if using SQLite)
+*.db
+*.sqlite3
+
+# Ignore log files
+*.log
+
+# Ignore the local environment variables file
+.env
+
+# Ignore the .vscode directory (Visual Studio Code settings)
+.vscode/
+
+# Ignore IDE files like for PyCharm or JetBrains
+.idea/
+
+# Ignore coverage and pytest cache directories
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+pytest*.xml
+
+# Ignore the build directory
+build/
+dist/
+*.egg-info/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
