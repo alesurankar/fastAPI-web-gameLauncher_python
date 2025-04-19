@@ -3,43 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask Database</title>
+    <title>NinjaStrike</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}?v=1" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Welcome to the Flask Database!</h1>
 
-    <!-- Display FastAPI Users -->
-    <h2>FastAPI Users</h2>
-    <ul>
-        {% for user in fastapi_users %}
-            <li>{{ user.name }} - Age: {{ user.age }}</li>
-        {% else %}
-            <li>No users found from FastAPI.</li>
-        {% endfor %}
-    </ul>
+    <header>
+        <h1>NinjaStrike</h1>
+        <nav>
+            <a href="/">Domov</a>
+            <a href="/login">Prijava</a>
+            <a href="/profile">Profil</a>
+            <a href="/register">Register</a>
+        </nav>
+    </header>
 
-    <!-- Display Local Database Users -->
-    <h2>SQLite Users</h2>
-    <ul>
-        {% for user in users %}
-            <li>{{ user.name }} - Age: {{ user.age }}</li>
-        {% else %}
-            <li>No users found in the database.</li>
-        {% endfor %}
-    </ul>
+    <main>
+        <section>
+            <h2>Rezultat iz strežnika</h2>
+            <p><strong>Rezultat:</strong> <span id="result">Nalaganje...</span></p>
+            <div id="output1"></div>
+        </section>
 
-    <!-- Buttons for creating and deleting the table -->
-    <a href="{{ url_for('create') }}">Create Table</a>
-    <a href="{{ url_for('delete') }}">Delete Table</a>
+        <section>
+            <h3>Status</h3>
+            <p id="login-status">
+                {% if 'username' in session %}
+                    Prijavljen kot {{ session['username'] }}.
+                {% else %}
+                    Ni prijavljen.
+                {% endif %}
+            </p>
+        </section>
+    </main>
 
-    <!-- Form to insert new data -->
-    <h2>Insert Data</h2>
-    <form action="{{ url_for('insert') }}" method="POST">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
-        <label for="age">Age:</label>
-        <input type="number" id="age" name="age" required><br><br>
-        <input type="submit" value="Insert Data">
-    </form>
+    <footer>
+        <p>&copy; 2024 Moja Flask Aplikacija</p>
+    </footer>
+
 </body>
 </html>

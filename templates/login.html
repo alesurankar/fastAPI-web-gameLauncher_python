@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NinjaStrike</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}?v=1" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Prijava</h1>
+        <nav>
+            <a href="/">Domov</a>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <form method="POST">
+                <label>Username:</label>
+                <input type="text" name="username">
+                <input type="submit" value="Login">
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Moja Flask Aplikacija</p>
+    </footer>
+</body>
+</html>

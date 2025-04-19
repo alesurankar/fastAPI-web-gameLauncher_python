@@ -1,25 +1,114 @@
 # uvicorn app_fastapi:app --reload
 
-from fastapi import FastAPI
-from typing import List, Dict
-import sqlite3
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import app_database
+from typing import Union
 
 app = FastAPI()
 
-# Connect to SQLite database and retrieve user data
-def get_users_from_db() -> List[Dict]:
-    conn = sqlite3.connect('example.db')
-    cursor = conn.execute("SELECT * FROM users")
-    
-    users = []
-    for row in cursor:
-        users.append({"id": row[0], "name": row[1], "age": row[2]})
-    
-    conn.close()
-    return users
 
-@app.get("/users", response_model=List[dict])
-def get_users():
-    # Call the function to fetch users from the database
-    users = get_users_from_db()
-    return users
+# --- Models ---
+class UserData(BaseModel):
+    name: str
+    age: int
+
+class UserUpdate(BaseModel):
+    name: Union[str, None] = None
+    age: Union[int, None] = None
+
+
+# --- Table Management ---
+@app.post("/create-user/{table_name}")
+def api_create_table(table_name: str):
+    try:
+        app_database.create_table(table_name)
+        return {"message": f"Table '{table_name}' created successfully."}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+
+@app.delete("/delete-user/{table_name}")
+def api_delete_table(table_name: str):
+    try:
+        app_database.delete_table(table_name)
+        return {"message": f"Table '{table_name}' deleted successfully."}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+
+@app.get("/check-users/{table_name}")
+def api_check_table(table_name: str):
+    try:
+        exists = app_database.check_table_exists(table_name)
+        return {"exists": exists}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+
+# --- User Management ---
+@app.post("/add-character/{table_name}")
+def api_add_user(table_name: str, user: UserData):
+    try:
+        app_database.insert_data(table_name, user.name, user.age)
+        return {"message": "User added."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/list-character/{table_name}")
+def api_list_users(table_name: str):
+    try:
+        users = app_database.retrieve_data(table_name)
+        return [dict(u) for u in users]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/show-character/{table_name}/{user_id}")
+def api_get_user_by_id(table_name: str, user_id: int):
+    try:
+        user = app_database.get_user_by_id(table_name, user_id)
+        if user:
+            return dict(user)
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/search-character/{table_name}")
+def api_find_user_by_name(table_name: str, name: str):
+    try:
+        users = app_database.find_users_by_name(table_name, name)
+        return [dict(u) for u in users]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.put("/change-character/{table_name}/{user_id}")
+def api_update_user(table_name: str, user_id: int, updates: UserUpdate):
+    try:
+        app_database.update_user(table_name, user_id, name=updates.name, age=updates.age)
+        return {"message": "User updated."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/delete-character/{table_name}/{user_id}")
+def api_delete_user(table_name: str, user_id: int):
+    try:
+        app_database.delete_user(table_name, user_id)
+        return {"message": "User deleted."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/count/{table_name}")
+def api_count_users(table_name: str):
+    try:
+        count = app_database.count_users(table_name)
+        return {"count": count}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

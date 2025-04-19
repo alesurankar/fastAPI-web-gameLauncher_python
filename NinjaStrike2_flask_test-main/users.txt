@@ -1,0 +1,16 @@
+{
+  "hero": {
+    "password": "sword123",
+    "profile": {
+      "maxLives": 100,
+      "lives": 100
+    }
+  },
+  "mage": {
+    "password": "magic456",
+    "profile": {
+      "maxLives": 100,
+      "lives": 100
+    }
+  }
+}
