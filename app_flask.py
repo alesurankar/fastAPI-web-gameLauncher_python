@@ -1,23 +1,31 @@
 # python app_flask.py
 
-from flask import Flask, render_template, jsonify
-import requests
+from flask import Flask, render_template, request, redirect, url_for
+from app_database import create_table, insert_data, retrieve_data, delete_table
 
 app = Flask(__name__)
 
-# FastAPI URL for data
-FASTAPI_URL = "http://127.0.0.1:8000/users"
-
 @app.route('/')
 def home():
-    # Fetch data from FastAPI
-    try:
-        response = requests.get(FASTAPI_URL)
-        users = response.json()
-    except Exception as e:
-        users = []
-        print(f"Error fetching users from FastAPI: {e}")
+    users = retrieve_data()
     return render_template("index.html", users=users)
 
+@app.route('/create_table')
+def create():
+    create_table()
+    return redirect(url_for('home'))
+
+@app.route('/delete_table')
+def delete():
+    delete_table()
+    return redirect(url_for('home'))
+
+@app.route('/insert_data', methods=['POST'])
+def insert():
+    name = request.form['name']
+    age = request.form['age']
+    insert_data(name, age)
+    return redirect(url_for('home'))
+
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)  # Flask runs on port 5000
+    app.run(debug=True, port=5000)
