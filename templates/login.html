@@ -11,7 +11,8 @@
     <header>
         <h1>Prijava</h1>
         <nav>
-            <a href="/">Domov</a>
+            <a href="/">Home</a>
+            <a href="/register">Register</a>
         </nav>
     </header>
 
@@ -27,7 +28,7 @@
         {% if messages %}
             <ul class="flashes">
         {% for message in messages %}
-            <li>{{ message }}</li>
+            {{ message }}
         {% endfor %}
             </ul>
         {% endif %}

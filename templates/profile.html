@@ -11,12 +11,21 @@
     <header>
         <h1>Profil</h1>
         <nav>
-            <a href="/">Domov</a>
-            <a href="/logout">Odjava</a>
+            <a href="/">Home</a>
+            <a href="/logout">Logout</a>
         </nav>
     </header>
 
     <main>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
         <h2>Welcome, {{ username }}</h2>
     
         <form method="POST">
@@ -28,13 +37,11 @@
         <h2>Your Characters</h2>
         <ul>
             {% for char in characters %}
-                <li>{{ char['name'] }} (Level {{ char['level'] }})</li>
+                <p>{{ char['name'] }} (Level {{ char['level'] }})</p>
             {% else %}
-                <li>No characters found.</li>
+                No characters found.
             {% endfor %}
         </ul>
-    
-        <a href="/logout">Logout</a>
     </main>
 
     <footer>
