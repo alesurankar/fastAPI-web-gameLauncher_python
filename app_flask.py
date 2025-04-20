@@ -1,28 +1,46 @@
 # python app_flask.py
 
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import requests 
+import os
 
 
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'
+app.secret_key = os.urandom(24)
 FASTAPI_URL = "http://127.0.0.1:8000"
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    username = session.get('username', None)
+
+    try:
+        response = requests.get(f"{FASTAPI_URL}/list-users")
+        tables = response.json().get("tables", [])
+    except Exception:
+        tables = []
+
+    return render_template("index.html", username=username, tables=tables)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
-        session['username'] = username
+        check_url = f"{FASTAPI_URL}/check-users/{username}"
 
-        # Create a table for this user (if it doesn't exist)
-        requests.post(f"{FASTAPI_URL}/create-user/{username}")
-        return redirect(url_for('profile'))
+        try:
+            response = requests.get(check_url)
+            response.raise_for_status()
+            exists = response.json().get("exists", False)
+
+            if exists:
+                session['username'] = username
+                return redirect(url_for('profile'))
+            else:
+                flash("User does not exist.")
+        except requests.exceptions.RequestException as e:
+            flash(f"Error checking user: {e}")
 
     return render_template('login.html')
 
@@ -36,11 +54,16 @@ def profile():
 
     if request.method == 'POST':
         name = request.form['name']
-        age = int(request.form['age'])
+        level = int(request.form['level'])
 
         # Add character via FastAPI
-        r = requests.post(f"{FASTAPI_URL}/add-character/{username}", json={"name": name, "age": age})
-        return f"Character Added: {r.json()}"
+        r = requests.post(f"{FASTAPI_URL}/add-character/{username}", json={"name": name, "level": level})
+        if r.status_code == 200:
+            flash("Character added successfully!")
+        else:
+            flash(f"Failed to add character: {r.json().get('detail', 'Unknown error')}")
+        
+        return redirect(url_for('profile'))
 
     # GET user list
     r = requests.get(f"{FASTAPI_URL}/list-character/{username}")
@@ -63,7 +86,8 @@ def register():
             return f"Error connecting to FastAPI: {str(e)}", 500
 
         if r.status_code == 200:
-            return redirect(url_for('login'))
+            session['username'] = username
+            return redirect(url_for('profile'))
         else:
             return f"Registration failed: {r.json().get('detail', 'Unknown error')}", 400
 

@@ -19,22 +19,25 @@
         </nav>
     </header>
 
-    <main>
-        <section>
-            <h2>Rezultat iz strežnika</h2>
-            <p><strong>Rezultat:</strong> <span id="result">Nalaganje...</span></p>
-            <div id="output1"></div>
-        </section>
-
-        <section>
-            <h3>Status</h3>
+    <main style="text-align: center; list-style-position: inside;">
+        <section >
+            <h2>Status</h2>
             <p id="login-status">
-                {% if 'username' in session %}
-                    Prijavljen kot {{ session['username'] }}.
+                {% if username %}
+                    logged as {{ username }}.
                 {% else %}
-                    Ni prijavljen.
+                    Not logged in.
                 {% endif %}
             </p>
+        
+            <h3>Registred users:</h3>
+            <ul style="margin-right: 60px;">
+                {% for table in tables %}
+                    <li>{{ table }}</li>
+                {% else %}
+                    <li>No users.</li>
+                {% endfor %}
+            </ul>
         </section>
     </main>
 

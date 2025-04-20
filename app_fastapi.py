@@ -11,11 +11,11 @@ app = FastAPI()
 # --- Models ---
 class UserData(BaseModel):
     name: str
-    age: int
+    level: int
 
 class UserUpdate(BaseModel):
     name: Union[str, None] = None
-    age: Union[int, None] = None
+    level: Union[int, None] = None
 
 
 # --- Table Management ---
@@ -44,6 +44,15 @@ def api_check_table(table_name: str):
         return {"exists": exists}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+
+@app.get("/list-users")
+def api_list_tables():
+    try:
+        tables = app_database.list_tables()
+        return {"tables": tables}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 
@@ -51,7 +60,7 @@ def api_check_table(table_name: str):
 @app.post("/add-character/{table_name}")
 def api_add_user(table_name: str, user: UserData):
     try:
-        app_database.insert_data(table_name, user.name, user.age)
+        app_database.insert_data(table_name, user.name, user.level)
         return {"message": "User added."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -90,7 +99,7 @@ def api_find_user_by_name(table_name: str, name: str):
 @app.put("/change-character/{table_name}/{user_id}")
 def api_update_user(table_name: str, user_id: int, updates: UserUpdate):
     try:
-        app_database.update_user(table_name, user_id, name=updates.name, age=updates.age)
+        app_database.update_user(table_name, user_id, name=updates.name, level=updates.level)
         return {"message": "User updated."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

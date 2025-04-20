@@ -21,8 +21,8 @@ def create():
 # Function to insert data into the table (via FastAPI)
 def insert():
     username = name_entry.get()
-    age = age_entry.get()
-    data = {"name": username, "age": age}
+    level = level_entry.get()
+    data = {"name": username, "level": level}
 
     # Insert user data via FastAPI
     r = requests.post(f"{FASTAPI_URL}/add-character/{username}", json=data)
@@ -39,7 +39,7 @@ def display():
     r = requests.get(f"{FASTAPI_URL}/list-character/{username}")
     if r.status_code == 200:
         users = r.json()
-        display_text = "\n".join([f"{user['name']} - Age: {user['age']}" for user in users])
+        display_text = "\n".join([f"{user['name']} - Level: {user['level']}" for user in users])
         label.config(text=display_text)
     else:
         label.config(text=f"Error: {r.json()}")
@@ -63,11 +63,11 @@ name_label.pack()
 name_entry = tk.Entry(root)
 name_entry.pack()
 
-age_label = tk.Label(root, text="Enter Age:")
-age_label.pack()
+level = tk.Label(root, text="Enter Level:")
+level.pack()
 
-age_entry = tk.Entry(root)
-age_entry.pack()
+level_entry = tk.Entry(root)
+level.pack()
 
 # Buttons for actions
 create_button = tk.Button(root, text="Create Table", command=create)
