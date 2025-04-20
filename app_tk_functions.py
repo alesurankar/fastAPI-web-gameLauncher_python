@@ -43,6 +43,25 @@ def fetch_users():
         # Extract the 'tables' list from the response JSON
         tables = response.json().get("tables", [])
     except Exception:
-        # If there's an error, set tables to an empty list
         tables = []
     return tables
+
+def update_data(parent_frame):
+    # Clear existing user labels before adding new ones
+    for widget in parent_frame.winfo_children():
+        if isinstance(widget, tk.Label):
+            widget.destroy()
+
+    users = fetch_users()
+
+    for user in users:
+        user_label = tk.Label(parent_frame, text=user, font=("Arial", 12))
+        user_label.pack(pady=2)
+
+def show_frame(self, page_name):
+    frame = self.frames[page_name]
+    frame.tkraise()
+    
+    # NEW: Call a custom method when the frame is shown
+    if hasattr(frame, "on_show"):
+        frame.on_show()
