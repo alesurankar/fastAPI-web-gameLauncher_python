@@ -1,62 +1,102 @@
-# python tk_interface.py
+# python app_tkinter.py
 
 import tkinter as tk
-from tkinter import messagebox
 import app_tk_functions
 
-root = tk.Tk()
-root.title("NinjaStrike")
-root.geometry("800x600")
+class NinjaStrikeApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("NinjaStrike")
+        self.geometry("800x600")
 
-# Create a header frame
-header = tk.Frame(root)
-header.pack(fill=tk.X)
+        self.container = tk.Frame(self)
+        self.container.pack(fill="both", expand=True)
 
-# Title Label in header
-header_label = tk.Label(header, text="NinjaStrike", font=("Arial", 24, "bold"))
-header_label.pack(side=tk.LEFT, padx=10)
+        self.frames = {}
 
-# Navigation
-nav_frame = tk.Frame(header)
-nav_frame.pack(side=tk.RIGHT, padx=10)
+        for PageClass in (HomePage, ProfilePage, LoginPage, RegisterPage):
+            page_name = PageClass.__name__
+            frame = PageClass(parent=self.container, controller=self)
+            self.frames[page_name] = frame
+            frame.grid(row=0, column=0, sticky="nsew")
 
-profile_button = tk.Button(nav_frame, text="Profile", command=lambda: app_tk_functions.open_profile_window(root))
-profile_button.pack(side=tk.LEFT, padx=5)
+        self.show_frame("HomePage")
 
-login_button = tk.Button(nav_frame, text="Login", command=lambda: app_tk_functions.open_login_window(root))
-login_button.pack(side=tk.LEFT, padx=5)
+    def show_frame(self, page_name):
+        frame = self.frames[page_name]
+        frame.tkraise()
 
-register_button = tk.Button(nav_frame, text="Register", command=lambda: app_tk_functions.open_register_window(root))
-register_button.pack(side=tk.LEFT, padx=5)
 
-# Main content area
-main_frame = tk.Frame(root)
-main_frame.pack(padx=20, pady=20)
+# ---------------- Pages ---------------- #
 
-# Status Section
-status_label = tk.Label(main_frame, text="Status", font=("Arial", 18))
-status_label.pack(pady=10)
+class HomePage(tk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        label = tk.Label(self, text="NinjaStrike", font=("Arial", 24))
+        label.pack(pady=20)
 
-status_text = tk.Label(main_frame, text="Not logged in.", font=("Arial", 14))
-status_text.pack(pady=5)
+        nav = tk.Frame(self)
+        nav.pack(pady=10)
 
-# Registered Users Section
-users_label = tk.Label(main_frame, text="Registered Users:", font=("Arial", 16))
-users_label.pack(pady=10)
+        tk.Button(nav, text="Profile", command=lambda: controller.show_frame("ProfilePage")).pack(side="left", padx=5)
+        tk.Button(nav, text="Login", command=lambda: controller.show_frame("LoginPage")).pack(side="left", padx=5)
+        tk.Button(nav, text="Register", command=lambda: controller.show_frame("RegisterPage")).pack(side="left", padx=5)
 
-# List of users
-users_listbox = tk.Listbox(main_frame, width=40, height=10, font=("Arial", 12))
-users_listbox.pack()
 
-# Footer Section
-footer = tk.Frame(root)
-footer.pack(side=tk.BOTTOM, fill=tk.X)
+class ProfilePage(tk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        label = tk.Label(self, text="Profile Page", font=("Arial", 24))
+        label.pack(pady=20)
 
-footer_label = tk.Label(footer, text="© 2024 NinjaStrike Application", font=("Arial", 10))
-footer_label.pack()
+        nav = tk.Frame(self)
+        nav.pack(pady=10)
 
-# Call to initially load users list
-app_tk_functions.update_user_list(users_listbox, status_text)
+        tk.Button(nav, text="Home", command=lambda: controller.show_frame("HomePage")).pack(side="left", padx=5)
+        tk.Button(nav, text="Logout", command=lambda: app_tk_functions.handle_logout(controller)).pack(side="left", padx=5)
 
-# Start the Tkinter event loop
-root.mainloop()
+
+class LoginPage(tk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        label = tk.Label(self, text="Login Page", font=("Arial", 24))
+        label.pack(pady=20)
+
+        nav = tk.Frame(self)
+        nav.pack(pady=10) 
+
+        tk.Button(nav, text="Home", command=lambda: controller.show_frame("HomePage")).pack(side="left", padx=5)
+        tk.Button(nav, text="Register", command=lambda: controller.show_frame("RegisterPage")).pack(side="left", padx=5)
+
+        self.username_entry = app_tk_functions.create_input_field(
+            self,
+            label_text="Username:",
+            button_text="Login",
+            callback=lambda username: app_tk_functions.handle_login(username, controller)
+        )
+
+class RegisterPage(tk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        label = tk.Label(self, text="Register Page", font=("Arial", 24))
+        label.pack(pady=20)
+
+        nav = tk.Frame(self)
+        nav.pack(pady=10) 
+
+        tk.Button(nav, text="Home", command=lambda: controller.show_frame("HomePage")).pack(side="left", padx=5)
+        tk.Button(nav, text="Profile", command=lambda: controller.show_frame("ProfilePage")).pack(side="left", padx=5)
+        tk.Button(nav, text="Login", command=lambda: controller.show_frame("LoginPage")).pack(side="left", padx=5)
+
+        self.username_entry = app_tk_functions.create_input_field(
+            self,
+            label_text="Username:",
+            button_text="Register",
+            callback=lambda username: app_tk_functions.handle_registration(username, controller)
+        )
+
+# -------- Run App -------- #
+
+if __name__ == "__main__":
+    app = NinjaStrikeApp()
+    app.mainloop()
