@@ -2,6 +2,7 @@
 
 import tkinter as tk
 import requests
+from tkinter import messagebox
 
 
 FASTAPI_URL = "http://127.0.0.1:8000"
@@ -25,8 +26,19 @@ def create_input_field(parent, label_text, button_text, callback=None):
 
 
 def handle_login(username, controller):
-    print("Username submitted:", username)
-    controller.show_frame("ProfilePage")
+    try:
+        response = requests.get(f"{FASTAPI_URL}/check-users/{username}")
+        response.raise_for_status()
+        exists = response.json().get("exists", False)
+
+        if exists:
+            controller.username = username
+            controller.show_frame("ProfilePage")
+        else:
+            messagebox.showerror("Login Failed", "User does not exist.")
+    except requests.RequestException as e:
+        messagebox.showerror("Error", f"Could not reach server:\n{e}")
+
 
 def handle_registration(username, controller):
     print("Registering username:", username)
@@ -58,10 +70,18 @@ def update_data(parent_frame):
         user_label = tk.Label(parent_frame, text=user, font=("Arial", 12))
         user_label.pack(pady=2)
 
-def show_frame(self, page_name):
-    frame = self.frames[page_name]
-    frame.tkraise()
-    
-    # NEW: Call a custom method when the frame is shown
-    if hasattr(frame, "on_show"):
-        frame.on_show()
+def login(self):
+        username = self.username_entry.get()
+
+        try:
+            response = requests.get(f"{FASTAPI_URL}/check-users/{username}")
+            response.raise_for_status()
+            exists = response.json().get("exists", False)
+
+            if exists:
+                self.controller.username = username  # Save to controller if you want to reuse
+                self.controller.show_frame("ProfilePage")
+            else:
+                messagebox.showerror("Login Failed", "User does not exist.")
+        except requests.RequestException as e:
+            messagebox.showerror("Error", f"Could not reach server:\n{e}")

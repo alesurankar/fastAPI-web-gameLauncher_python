@@ -48,10 +48,13 @@ class HomePage(tk.Frame):
         tk.Button(nav, text="Login", command=lambda: controller.show_frame("LoginPage")).pack(side="left", padx=5)
         tk.Button(nav, text="Register", command=lambda: controller.show_frame("RegisterPage")).pack(side="left", padx=5)
 
+        self.data_content = tk.Frame(self)
+        self.data_content.pack(pady=10)
+
     def on_show(self):
-        app_tk_functions.update_data(self)
+        app_tk_functions.update_data(self.data_content)
         # refreshes every 5sec
-        self.after(5000, self.on_show)
+        #self.after(5000, self.on_show)
 
 
 class ProfilePage(tk.Frame):
@@ -65,6 +68,9 @@ class ProfilePage(tk.Frame):
 
         tk.Button(nav, text="Home", command=lambda: controller.show_frame("HomePage")).pack(side="left", padx=5)
         tk.Button(nav, text="Logout", command=lambda: app_tk_functions.handle_logout(controller)).pack(side="left", padx=5)
+        
+        self.data_content = tk.Frame(self)
+        self.data_content.pack(pady=10)
 
 
 class LoginPage(tk.Frame):
@@ -85,6 +91,7 @@ class LoginPage(tk.Frame):
             button_text="Login",
             callback=lambda username: app_tk_functions.handle_login(username, controller)
         )
+
 
 class RegisterPage(tk.Frame):
     def __init__(self, parent, controller):
