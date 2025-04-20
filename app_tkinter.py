@@ -30,16 +30,21 @@ class NinjaStrikeApp(tk.Tk):
         if hasattr(frame, "on_show"):
             frame.on_show()
     
-    
-
 
 # ---------------- Pages ---------------- #
 
 class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
+        self.controller = controller
+
         label = tk.Label(self, text="NinjaStrike", font=("Arial", 24))
         label.pack(pady=20)
+        
+        # Initial message
+        message = "Not logged in."
+        self.message_label = tk.Label(self, text=message, font=("Arial", 12))
+        self.message_label.pack(side="top", pady=5)
 
         nav = tk.Frame(self)
         nav.pack(pady=10)
@@ -51,10 +56,19 @@ class HomePage(tk.Frame):
         self.data_content = tk.Frame(self)
         self.data_content.pack(pady=10)
 
+    def on_refresh(self):
+        # Dynamically update the login status message
+        if hasattr(self.controller, 'username') and self.controller.username:
+            message = f"Logged in as {self.controller.username}."
+        else:
+            message = "Not logged in."
+
+        self.message_label.config(text=message)
+        self.after(5000, self.on_refresh)  # Continuous refresh
+
     def on_show(self):
+        self.on_refresh()
         app_tk_functions.update_data(self.data_content)
-        # refreshes every 5sec
-        #self.after(5000, self.on_show)
 
 
 class ProfilePage(tk.Frame):
@@ -72,6 +86,9 @@ class ProfilePage(tk.Frame):
         self.data_content = tk.Frame(self)
         self.data_content.pack(pady=10)
 
+    def on_show(self):
+        pass
+
 
 class LoginPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -85,12 +102,14 @@ class LoginPage(tk.Frame):
         tk.Button(nav, text="Home", command=lambda: controller.show_frame("HomePage")).pack(side="left", padx=5)
         tk.Button(nav, text="Register", command=lambda: controller.show_frame("RegisterPage")).pack(side="left", padx=5)
 
-        self.username_entry = app_tk_functions.create_input_field(
-            self,
-            label_text="Username:",
-            button_text="Login",
-            callback=lambda username: app_tk_functions.handle_login(username, controller)
-        )
+        app_tk_functions.create_input_field(self,label_text="Username:",button_text="Login",
+            callback=lambda username: app_tk_functions.handle_login(username, controller))
+
+        self.data_content = tk.Frame(self)
+        self.data_content.pack(pady=10)
+
+    def on_show(self):
+        pass
 
 
 class RegisterPage(tk.Frame):
@@ -106,12 +125,15 @@ class RegisterPage(tk.Frame):
         tk.Button(nav, text="Profile", command=lambda: controller.show_frame("ProfilePage")).pack(side="left", padx=5)
         tk.Button(nav, text="Login", command=lambda: controller.show_frame("LoginPage")).pack(side="left", padx=5)
 
-        self.username_entry = app_tk_functions.create_input_field(
-            self,
-            label_text="Username:",
-            button_text="Register",
-            callback=lambda username: app_tk_functions.handle_registration(username, controller)
-        )
+        app_tk_functions.create_input_field(self,label_text="Username:",button_text="Register",
+            callback=lambda username: app_tk_functions.handle_registration(username, controller))
+
+        self.data_content = tk.Frame(self)
+        self.data_content.pack(pady=10)
+
+    def on_show(self):
+        pass
+
 
 # -------- Run App -------- #
 

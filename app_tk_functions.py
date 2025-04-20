@@ -26,6 +26,7 @@ def create_input_field(parent, label_text, button_text, callback=None):
 
 
 def handle_login(username, controller):
+    print("Loging username:", username)
     try:
         response = requests.get(f"{FASTAPI_URL}/check-users/{username}")
         response.raise_for_status()
@@ -41,12 +42,39 @@ def handle_login(username, controller):
 
 
 def handle_registration(username, controller):
+    if not username or len(username) < 3:
+        messagebox.showerror("Registration", "Username must be at least 3 characters.")
+        return
+    
     print("Registering username:", username)
-    controller.show_frame("ProfilePage")
+
+    try:
+        response = requests.get(f"{FASTAPI_URL}/check-users/{username}")
+        response.raise_for_status()
+        exists = response.json().get("exists", False)
+
+        if exists:
+            messagebox.showerror("Registration", "User already exist.")
+            return
+        else:
+            response = requests.post(f"{FASTAPI_URL}/create-user/{username}")
+            response.raise_for_status()
+            controller.username = username
+            
+            # If the user was successfully created, show the success message and move to the profile page
+            messagebox.showinfo("Registration", "User successfully registered!")
+            controller.username = username
+            controller.show_frame("ProfilePage")
+
+
+    except requests.RequestException as e:
+        messagebox.showerror("Error", f"Could not reach server:\n{e}")
+
 
 def handle_logout(controller):
     print("Successfully logged out")
     controller.show_frame("HomePage")
+
 
 def fetch_users():
     try:
@@ -57,6 +85,14 @@ def fetch_users():
     except Exception:
         tables = []
     return tables
+
+
+def update_user_data(parent_frame):
+    # Clear existing user labels before adding new ones
+    for widget in parent_frame.winfo_children():
+        if isinstance(widget, tk.Label):
+            widget.destroy()
+            
 
 def update_data(parent_frame):
     # Clear existing user labels before adding new ones
@@ -69,6 +105,7 @@ def update_data(parent_frame):
     for user in users:
         user_label = tk.Label(parent_frame, text=user, font=("Arial", 12))
         user_label.pack(pady=2)
+
 
 def login(self):
         username = self.username_entry.get()
