@@ -1,10 +1,10 @@
 # python tk_functions.py
 
+import tkinter as tk
+import requests
+
 
 FASTAPI_URL = "http://127.0.0.1:8000"
-
-
-import tkinter as tk
 
 def create_input_field(parent, label_text, button_text, callback=None):
     label = tk.Label(parent, text=label_text)
@@ -23,6 +23,7 @@ def create_input_field(parent, label_text, button_text, callback=None):
 
     return entry
 
+
 def handle_login(username, controller):
     print("Username submitted:", username)
     controller.show_frame("ProfilePage")
@@ -34,3 +35,14 @@ def handle_registration(username, controller):
 def handle_logout(controller):
     print("Successfully logged out")
     controller.show_frame("HomePage")
+
+def fetch_users():
+    try:
+        # Send a GET request to FastAPI server to get the list of users
+        response = requests.get(f"{FASTAPI_URL}/list-users")
+        # Extract the 'tables' list from the response JSON
+        tables = response.json().get("tables", [])
+    except Exception:
+        # If there's an error, set tables to an empty list
+        tables = []
+    return tables

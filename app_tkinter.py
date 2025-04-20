@@ -42,6 +42,18 @@ class HomePage(tk.Frame):
         tk.Button(nav, text="Login", command=lambda: controller.show_frame("LoginPage")).pack(side="left", padx=5)
         tk.Button(nav, text="Register", command=lambda: controller.show_frame("RegisterPage")).pack(side="left", padx=5)
 
+        # Fetch the list of users from FastAPI server
+        users = app_tk_functions.fetch_users()
+        
+        # Display the fetched list of users in a Listbox
+        users_label = tk.Label(self, text="Registered Users:", font=("Arial", 16))
+        users_label.pack(pady=10)
+        
+        # Display each user as a separate Label
+        for user in users:
+            user_label = tk.Label(self, text=user, font=("Arial", 12))
+            user_label.pack(pady=2)
+
 
 class ProfilePage(tk.Frame):
     def __init__(self, parent, controller):
