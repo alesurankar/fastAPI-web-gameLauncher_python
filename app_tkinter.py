@@ -49,7 +49,7 @@ class HomePage(tk.Frame):
         nav = tk.Frame(self)
         nav.pack(pady=10)
 
-        tk.Button(nav, text="Profile", command=lambda: controller.show_frame("ProfilePage")).pack(side="left", padx=5)
+        tk.Button(nav, text="Profile", command=lambda: app_tk_functions.pro(controller)).pack(side="left", padx=5)
         tk.Button(nav, text="Login", command=lambda: controller.show_frame("LoginPage")).pack(side="left", padx=5)
         tk.Button(nav, text="Register", command=lambda: controller.show_frame("RegisterPage")).pack(side="left", padx=5)
 

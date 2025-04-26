@@ -71,6 +71,10 @@ def handle_registration(username, controller):
         messagebox.showerror("Error", f"Could not reach server:\n{e}")
 
 
+def profile_call(controller):
+    controller.show_frame("ProfilePage")
+
+
 def handle_logout(controller):
     print("Successfully logged out")
     controller.show_frame("HomePage")

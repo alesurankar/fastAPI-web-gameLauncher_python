@@ -7,6 +7,10 @@ from typing import Union
 
 app = FastAPI()
 
+# -- test ---
+@app.get("/signal")
+async def read_signal():
+    return {"message": "Signal received"}
 
 # --- Models ---
 class UserData(BaseModel):
@@ -121,3 +125,45 @@ def api_count_users(table_name: str):
         return {"count": count}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ## function calls
+# # FASTAPI_URL = "http://127.0.0.1:8000"
+
+# #TABLE MANAGEMENT
+# # Create a user table
+# response = requests.post(f"{FASTAPI_URL}/create-user/{username}")
+
+# # Delete a user table
+# response = requests.delete(f"{FASTAPI_URL}/delete-user/{username}")
+
+# # Check if a user table exists
+# response = requests.get(f"{FASTAPI_URL}/check-users/{username}")
+
+# # List all user tables
+# response = requests.get(f"{FASTAPI_URL}/list-users")
+
+
+# #USER MANAGEMENT
+# # Add a character (user) to a table
+# payload = {"name": "Hero", "level": 10}
+# response = requests.post(f"{FASTAPI_URL}/add-character/{username}", json=payload)
+
+# # List all characters (users) in a table
+# response = requests.get(f"{FASTAPI_URL}/list-character/{username}")
+
+# # Get a character (user) by ID
+# response = requests.get(f"{FASTAPI_URL}/show-character/{username}/{user_id}")
+
+# # Search for characters by name
+# response = requests.get(f"{FASTAPI_URL}/search-character/{username}", params={"name": "Hero"})
+
+# # Update a character (user) by ID
+# update_payload = {"name": "NinjaHero", "level": 12}
+# response = requests.put(f"{FASTAPI_URL}/change-character/{username}/{user_id}", json=update_payload)
+
+# # Delete a character (user) by ID
+# response = requests.delete(f"{FASTAPI_URL}/delete-character/{username}/{user_id}")
+
+# # Count number of users in a table
+# response = requests.get(f"{FASTAPI_URL}/count/{username}")
