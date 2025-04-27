@@ -3,6 +3,7 @@
 import tkinter as tk
 import app_tk_functions
 
+
 class NinjaStrikeApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -14,7 +15,7 @@ class NinjaStrikeApp(tk.Tk):
 
         self.frames = {}
 
-        for PageClass in (HomePage, ProfilePage, LoginPage, RegisterPage):
+        for PageClass in (HomePage, LoginPage, RegisterPage):
             page_name = PageClass.__name__
             frame = PageClass(parent=self.container, controller=self)
             self.frames[page_name] = frame
@@ -40,76 +41,73 @@ class HomePage(tk.Frame):
 
         label = tk.Label(self, text="NinjaStrike", font=("Arial", 24))
         label.pack(pady=20)
-        
+
         # Initial message
-        message = "Not logged in."
-        self.message_label = tk.Label(self, text=message, font=("Arial", 12))
+        self.message_label = tk.Label(self, text="Not logged in.", font=("Arial", 12))
         self.message_label.pack(side="top", pady=5)
 
         nav = tk.Frame(self)
         nav.pack(pady=10)
 
-        tk.Button(nav, text="Profile", command=lambda: app_tk_functions.pro(controller)).pack(side="left", padx=5)
         tk.Button(nav, text="Login", command=lambda: controller.show_frame("LoginPage")).pack(side="left", padx=5)
         tk.Button(nav, text="Register", command=lambda: controller.show_frame("RegisterPage")).pack(side="left", padx=5)
+        tk.Button(nav, text="Launch the Game", command=lambda: app_tk_functions.profile_call(controller)).pack(side="left", padx=5)
+        if hasattr(controller, 'username') and controller.username:
+            tk.Button(nav, text="Logout", command=lambda: app_tk_functions.handle_logout(controller)).pack(side="left", padx=5)
+
 
         self.data_content = tk.Frame(self)
         self.data_content.pack(pady=10)
 
     def on_refresh(self):
-        # Dynamically update the login status message
         if hasattr(self.controller, 'username') and self.controller.username:
             message = f"Logged in as {self.controller.username}."
         else:
             message = "Not logged in."
 
+        # Update the message label with the correct text
         self.message_label.config(text=message)
-        self.after(5000, self.on_refresh)  # Continuous refresh
+
+        # Remove and add the "Logout" button based on login status
+        for widget in self.winfo_children():
+            if isinstance(widget, tk.Button) and widget.cget("text") == "Logout":
+                widget.pack_forget()  # Remove the "Logout" button
+
+        # Add the "Logout" button if the user is logged in
+        if hasattr(self.controller, 'username') and self.controller.username:
+            tk.Button(self, text="Logout", command=lambda: app_tk_functions.handle_logout(self.controller)).pack(side="left", padx=5)
 
     def on_show(self):
         self.on_refresh()
-        app_tk_functions.update_data(self.data_content)
 
 
-class ProfilePage(tk.Frame):
+
+class LoginPage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
-        label = tk.Label(self, text="Profile Page", font=("Arial", 24))
+        self.controller = controller
+
+        label = tk.Label(self, text="Login Page", font=("Arial", 24))
         label.pack(pady=20)
 
         nav = tk.Frame(self)
         nav.pack(pady=10)
 
         tk.Button(nav, text="Home", command=lambda: controller.show_frame("HomePage")).pack(side="left", padx=5)
-        tk.Button(nav, text="Logout", command=lambda: app_tk_functions.handle_logout(controller)).pack(side="left", padx=5)
-        
-        self.data_content = tk.Frame(self)
-        self.data_content.pack(pady=10)
-
-    def on_show(self):
-        pass
-
-
-class LoginPage(tk.Frame):
-    def __init__(self, parent, controller):
-        super().__init__(parent)
-        label = tk.Label(self, text="Login Page", font=("Arial", 24))
-        label.pack(pady=20)
-
-        nav = tk.Frame(self)
-        nav.pack(pady=10) 
-
-        tk.Button(nav, text="Home", command=lambda: controller.show_frame("HomePage")).pack(side="left", padx=5)
         tk.Button(nav, text="Register", command=lambda: controller.show_frame("RegisterPage")).pack(side="left", padx=5)
 
-        app_tk_functions.create_input_field(self,label_text="Username:",button_text="Login",
-            callback=lambda username: app_tk_functions.handle_login(username, controller))
+        # Add login input fields and buttons
+        app_tk_functions.create_input_field(self, label_text="Username:", button_text="Login",
+                                            callback=lambda username: app_tk_functions.handle_login(username, controller))
 
         self.data_content = tk.Frame(self)
         self.data_content.pack(pady=10)
 
     def on_show(self):
-        pass
+        if self.controller.loged_in:  # Check if the user is logged in
+            print("User is logged in:", self.controller.username)
+        else:
+            print("User is not logged in.")
 
 
 class RegisterPage(tk.Frame):
@@ -122,7 +120,6 @@ class RegisterPage(tk.Frame):
         nav.pack(pady=10) 
 
         tk.Button(nav, text="Home", command=lambda: controller.show_frame("HomePage")).pack(side="left", padx=5)
-        tk.Button(nav, text="Profile", command=lambda: controller.show_frame("ProfilePage")).pack(side="left", padx=5)
         tk.Button(nav, text="Login", command=lambda: controller.show_frame("LoginPage")).pack(side="left", padx=5)
 
         app_tk_functions.create_input_field(self,label_text="Username:",button_text="Register",
