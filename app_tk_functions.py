@@ -133,13 +133,6 @@ def display_characters(controller, characters):
         character_label = tk.Label(controller.character_list_frame, text=f"{character_name} (Level {character_level})", font=("Arial", 12))
         character_label.pack(pady=2)
 
-    
-def client_call(controller):
-    if hasattr(controller, 'username') and controller.username:
-        launch_client(controller)
-    else:
-        messagebox.showerror("Login Required", "Please log in first.")
-
 
 def launch_client(controller, event=None):
     exe_directory = r'C:\Projects\boost_asio_server\client_side\x64\Debug'
@@ -153,9 +146,7 @@ def launch_client(controller, event=None):
 def launch_game(controller, username, event=None):
     exe_directory = r'C:\Users\Uporabnik\Desktop\NinjaStrike' 
     exe_path = os.path.join(exe_directory, 'MojFramework.exe')
-
     if os.path.exists(exe_path):
-        # You can include the username in the process environment or any other way
         print(f"Launching game for {username}")
         subprocess.Popen([exe_path], cwd=exe_directory)
     else:

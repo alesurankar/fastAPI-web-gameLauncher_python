@@ -52,17 +52,20 @@ class HomePage(tk.Frame):
         tk.Button(nav, text="Login", command=lambda: controller.show_frame("LoginPage")).pack(side="left", padx=5)
         tk.Button(nav, text="Register", command=lambda: controller.show_frame("RegisterPage")).pack(side="left", padx=5)
         tk.Button(nav, text="Launch the Game", command=lambda: self.game_call(controller)).pack(side="left", padx=5)
-        tk.Button(nav, text="Launch Client", command=lambda: app_tk_functions.client_call(controller)).pack(side="left", padx=5)
 
         self.data_content = tk.Frame(self)
         self.data_content.pack(pady=10)
 
     def game_call(self, controller):
         if hasattr(controller, 'username') and controller.username:
-            username = controller.username
+            username = controller.username 
+            with open('username.txt', 'w') as f:
+                f.write(username)
             print(f"Launching game for user: {username}")
             # Pass the username to launch_game
             app_tk_functions.launch_game(controller, username)
+            app_tk_functions.launch_client(controller, username)
+
         else:
             print("User is not logged in.")
 
