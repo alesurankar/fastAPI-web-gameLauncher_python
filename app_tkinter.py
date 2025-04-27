@@ -52,9 +52,6 @@ class HomePage(tk.Frame):
         tk.Button(nav, text="Login", command=lambda: controller.show_frame("LoginPage")).pack(side="left", padx=5)
         tk.Button(nav, text="Register", command=lambda: controller.show_frame("RegisterPage")).pack(side="left", padx=5)
         tk.Button(nav, text="Launch the Game", command=lambda: app_tk_functions.profile_call(controller)).pack(side="left", padx=5)
-        if hasattr(controller, 'username') and controller.username:
-            tk.Button(nav, text="Logout", command=lambda: app_tk_functions.handle_logout(controller)).pack(side="left", padx=5)
-
 
         self.data_content = tk.Frame(self)
         self.data_content.pack(pady=10)
@@ -77,8 +74,20 @@ class HomePage(tk.Frame):
         if hasattr(self.controller, 'username') and self.controller.username:
             tk.Button(self, text="Logout", command=lambda: app_tk_functions.handle_logout(self.controller)).pack(side="left", padx=5)
 
+            # Placeholder for the list of characters
+            self.character_list_label = tk.Label(self, text="Character List:", font=("Arial", 14))
+            self.character_list_label.pack(pady=10)
+            self.character_list_frame = tk.Frame(self)
+            self.character_list_frame.pack(pady=10)
+
+            # Call the utility function to fetch and display the character list
+            app_tk_functions.refresh_character_list(self)  # Passing self to update the HomePage UI
+            
+
     def on_show(self):
         self.on_refresh()
+
+    
 
 
 

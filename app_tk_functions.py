@@ -111,24 +111,38 @@ def fetch_users():
     return tables
 
 
-def update_user_data(parent_frame):
-    # Clear existing user labels before adding new ones
-    for widget in parent_frame.winfo_children():
-        if isinstance(widget, tk.Label):
-            widget.destroy()
-            
+def refresh_character_list(controller):
+    try:
+        table_name = "characters"
+        response = requests.get(f"{FASTAPI_URL}/list-character/{table_name}")
 
-def update_data(parent_frame):
-    # Clear existing user labels before adding new ones
-    for widget in parent_frame.winfo_children():
-        if isinstance(widget, tk.Label):
-            widget.destroy()
+        # Debugging: print the status code and response content
+        print(f"Status Code: {response.status_code}")
+        print(f"Response Content: {response.text}")
 
-    users = fetch_users()
+        if response.status_code == 200:
+            characters = response.json()
+            display_characters(controller, characters)
+        else:
+            messagebox.showerror("Error", "Failed to fetch character data.")
+    except requests.RequestException as e:
+        messagebox.showerror("Error", f"Could not reach server:\n{e}")
 
-    for user in users:
-        user_label = tk.Label(parent_frame, text=user, font=("Arial", 12))
-        user_label.pack(pady=2)
+
+
+def display_characters(controller, characters):
+    # Clear previous character list if any
+    for widget in controller.character_list_frame.winfo_children():
+        widget.destroy()
+
+    # Display each character in a label
+    for character in characters:
+        character_name = character.get("name", "Unknown")
+        character_level = character.get("level", "N/A")
+        character_label = tk.Label(controller.character_list_frame, text=f"{character_name} (Level {character_level})", font=("Arial", 12))
+        character_label.pack(pady=2)
+
+
 
 def play_game(controller, event=None):
     # Ensure the absolute path to the executable is correct
