@@ -48,7 +48,7 @@ def api_check_table(table_name: str):
         return {"exists": exists}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
 
 @app.get("/list-users")
 def api_list_tables():

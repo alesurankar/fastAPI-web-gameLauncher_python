@@ -33,18 +33,19 @@ def handle_login(username, controller):
         response = requests.get(f"{FASTAPI_URL}/check-users/{username}")
         response.raise_for_status()
         exists = response.json().get("exists", False)
+        
 
         if exists:
             controller.username = username
             controller.loged_in = True  # Store login status in controller
             controller.show_frame("HomePage")
+
         else:
             messagebox.showerror("Login Failed", "User does not exist.")
             controller.loged_in = False  # Ensure the login status is False
     except requests.RequestException as e:
         messagebox.showerror("Error", f"Could not reach server:\n{e}")
         controller.loged_in = False  # Ensure the login status is False
-        
 
 
 def handle_registration(username, controller):
@@ -75,16 +76,6 @@ def handle_registration(username, controller):
 
     except requests.RequestException as e:
         messagebox.showerror("Error", f"Could not reach server:\n{e}")
-
-
-def profile_call(controller):
-    # Check if the controller has a logged-in username
-    if hasattr(controller, 'username') and controller.username:
-        # If logged in, call the game launch function
-        play_game(controller)
-    else:
-        # If not logged in, show an error
-        messagebox.showerror("Login Required", "Please log in first.")
 
 
 def handle_logout(controller):
@@ -142,16 +133,30 @@ def display_characters(controller, characters):
         character_label = tk.Label(controller.character_list_frame, text=f"{character_name} (Level {character_level})", font=("Arial", 12))
         character_label.pack(pady=2)
 
+    
+def client_call(controller):
+    if hasattr(controller, 'username') and controller.username:
+        launch_client(controller)
+    else:
+        messagebox.showerror("Login Required", "Please log in first.")
 
 
-def play_game(controller, event=None):
-    # Ensure the absolute path to the executable is correct
-    exe_directory = r'C:\Users\Uporabnik\Desktop\NinjaStrike'  # Update with the new directory
-    exe_path = os.path.join(exe_directory, 'MojFramework.exe')  # Make sure the file name is correct
-
-    # Check if the executable exists at the specified path
+def launch_client(controller, event=None):
+    exe_directory = r'C:\Projects\boost_asio_server\client_side\x64\Debug'
+    exe_path = os.path.join(exe_directory, 'client_side.exe') 
     if os.path.exists(exe_path):
-        # Launch the C++ game client with the correct working directory
+        subprocess.Popen([exe_path], cwd=exe_directory)
+    else:
+        print(f"Error: {exe_path} not found")
+
+
+def launch_game(controller, username, event=None):
+    exe_directory = r'C:\Users\Uporabnik\Desktop\NinjaStrike' 
+    exe_path = os.path.join(exe_directory, 'MojFramework.exe')
+
+    if os.path.exists(exe_path):
+        # You can include the username in the process environment or any other way
+        print(f"Launching game for {username}")
         subprocess.Popen([exe_path], cwd=exe_directory)
     else:
         print(f"Error: {exe_path} not found")
