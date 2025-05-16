@@ -134,17 +134,17 @@ def display_characters(controller, characters):
         character_label.pack(pady=2)
 
 
-def launch_client(controller, event=None):
-    exe_directory = r'C:\Projects\boost_asio_server\client_side\x64\Debug'
-    exe_path = os.path.join(exe_directory, 'client_side.exe') 
-    if os.path.exists(exe_path):
-        subprocess.Popen([exe_path], cwd=exe_directory)
-    else:
-        print(f"Error: {exe_path} not found")
+# def launch_client(controller, event=None):
+#     exe_directory = r'C:\Projects\boost_asio_server\client_side\x64\Debug'
+#     exe_path = os.path.join(exe_directory, 'client_side.exe') 
+#     if os.path.exists(exe_path):
+#         subprocess.Popen([exe_path], cwd=exe_directory)
+#     else:
+#         print(f"Error: {exe_path} not found")
 
 
 def launch_game(controller, username, event=None):
-    exe_directory = r'C:\Users\Uporabnik\Desktop\NinjaStrike' 
+    exe_directory = r'C:\Projects\boost_asio_server\client_side_framework\x64\Debug' 
     exe_path = os.path.join(exe_directory, 'MojFramework.exe')
     if os.path.exists(exe_path):
         print(f"Launching game for {username}")

@@ -64,7 +64,7 @@ class HomePage(tk.Frame):
             print(f"Launching game for user: {username}")
             # Pass the username to launch_game
             app_tk_functions.launch_game(controller, username)
-            app_tk_functions.launch_client(controller, username)
+            # app_tk_functions.launch_client(controller, username)
 
         else:
             print("User is not logged in.")

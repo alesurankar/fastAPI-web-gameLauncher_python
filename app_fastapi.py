@@ -17,6 +17,10 @@ class UserData(BaseModel):
     name: str
     level: int
 
+class Position(BaseModel):
+    x: float
+    y: float
+
 class UserUpdate(BaseModel):
     name: Union[str, None] = None
     level: Union[int, None] = None
@@ -57,6 +61,26 @@ def api_list_tables():
         return {"tables": tables}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+# --- Position Management ---
+@app.post("/update-position/{table_name}")
+def update_position_endpoint(table_name: str, pos: Position):
+    try:
+        app_database.update_position(table_name, pos.x, pos.y)
+        return {"message": "Position updated"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/get-position/{table_name}")
+def get_position_endpoint(table_name: str):
+    try:
+        return app_database.get_position(table_name)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 
 
 

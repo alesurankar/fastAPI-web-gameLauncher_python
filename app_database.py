@@ -26,9 +26,17 @@ def create_table(table_name):
         CREATE TABLE IF NOT EXISTS {table_name} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
-            level INTEGER
+            level INTEGER,
+            x INTEGER DEFAULT 10,
+            y INTEGER DEFAULT 10
         )
     ''')
+
+    cursor = conn.execute(f"SELECT COUNT(*) as count FROM {table_name}")
+    count = cursor.fetchone()["count"]
+    if count == 0:
+        conn.execute(f"INSERT INTO {table_name} (name, level) VALUES (?, ?)", ("DefaultName", 1))
+        
     conn.commit()
     conn.close()
 
@@ -58,6 +66,33 @@ def list_tables():
     tables = [row["name"] for row in cursor.fetchall()]
     conn.close()
     return tables
+
+
+
+# --- Position management --- 
+def update_position(table_name, x, y):
+    validate_table_name(table_name)
+    conn = get_db_connection()
+    cursor = conn.execute(f"SELECT COUNT(*) FROM {table_name} WHERE id = 1")
+    exists = cursor.fetchone()[0]
+    if exists:
+        conn.execute(f"UPDATE {table_name} SET x = ?, y = ? WHERE id = 1", (x, y))
+    else:
+        conn.execute(f"INSERT INTO {table_name} (id, name, level, x, y) VALUES (1, ?, ?, ?, ?)",
+                     (table_name, 1, x, y))
+    conn.commit()
+    conn.close()
+
+def get_position(table_name):
+    validate_table_name(table_name)
+    conn = get_db_connection()
+    cursor = conn.execute(f'''
+        SELECT x, y FROM {table_name} WHERE id = 1
+    ''')
+    row = cursor.fetchone()
+    conn.close()
+    return {"x": row["x"], "y": row["y"]} if row else {"x": 0.0, "y": 0.0}
+
 
 
 
